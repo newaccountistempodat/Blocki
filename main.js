@@ -14,7 +14,7 @@ var speed = 6;
 
 
 window.onload = function main() {
-  phase = "win";
+  phase = "Start";
   lvlNumber = 1;
   l3p = 0;
   l3t = 0;
