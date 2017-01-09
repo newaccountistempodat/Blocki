@@ -13,9 +13,11 @@ function label(ctx,x,y,content,align,font,color,textBaseline) {
 												y == "top" ? 0 : y == "center" ? H/2 : y == "bottom" ? H : y);
 }
 
-function rect(ctx,x,y,w,h,color) {
+function rect(ctx,x,y,w,h,color,opacity) {
+	if (opacity) {ctx.globalAlpha	= opacity;}
 	ctx.fillStyle = color;
 	ctx.fillRect(x,y,w,h);
+	if (opacity) {ctx.globalAlpha	= 1;}
 }
 
 function BoundingBox(ctx,x,y,w,h,scolor,sw) {
