@@ -3,13 +3,9 @@
 * Font: Raleway (https://www.google.com/fonts/specimen/Raleway)
 */
 
-var canvas,ctx,canMove,player,entities,tping,lvlNumber,phase,msgIndex,timearr,ptime; //Important variables
-var guiLH,guiLD; //GUI Demo variables
-var death_timer, death_text, death_opacity, death_opacity_button; //Death screen variables
+var canvas,ctx,canMove,player,entities,tping,lvlNumber,phase,msgIndex; //Important variables
 var l3p,l3t; //Lvl 3 tutorial variables
-var version = "0.4.2";
-
-
+var version = "0.6";
 var speed = 6;
 
 /**
@@ -18,17 +14,12 @@ var speed = 6;
 
 
 window.onload = function main() {
-  phase = "Start";
+  phase = "win";
   lvlNumber = 1;
   l3p = 0;
   l3t = 0;
-  ptime = Date.now();
-  timearr = [];
-  for (var i = 0; i <= 100; i++) {
-    timearr.push(60);
-  };
   window.onkeydown = keydown;
-  canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H;
+  canvas = document.createElement('canvas'); canvas.width = 640; canvas.height = 480;
   document.body.appendChild(canvas);
   ctx = canvas.getContext('2d');
   window.addEventListener('click', clickHandler, false);
@@ -37,8 +28,6 @@ window.onload = function main() {
 };
 
 function init() {
-  death_timer = 0;
-  guiLH = 50;
   msgIndex = 0;
   player = new Entity(0,0,"player");
 }
@@ -66,51 +55,38 @@ function restart() {
 }
 
 function render() {
-  ctx.fillStyle = "grey";
-  ctx.fillRect(0,0,W,H);
-  drawFPS();  
+  ctx.fillStyle = "DarkGray";
+  ctx.fillRect(0,0,640,480);
   switch(phase) {
-    case "test":
-      button(ctx,0,0,"big","click",function() {console.log("test");});
-      break;
     case "Start":
-      label(ctx,"center","center","The Game","center","60px Raleway","black");
-      label(ctx,"center",H*0.75,"[Space] to start","center","20px Raleway","black");
-      label(ctx,"left",17,"V"+version,"left","20px Raleway","black");
-      label(ctx,"right",17,"Early Alpha","right","20px Raleway","black");
-      button(ctx,W/2,50,"huge","GUI Demo",function() {phase = "gui"});
+      label(ctx,"center","center","Blocki","center","60px Raleway","black");
+      label(ctx,"center",360,"[Space] to start","center","20px Raleway","black");
+      label(ctx,10,25,"V"+version,"left","20px Raleway","black");
+      label(ctx,630,25,"Alpha","right","20px Raleway","black");
       break;
     case "stopped":
     case "play":
-    //(this.x < W/2-352 || this.x > 320+W/2 || this.y < H/2-352 || this.y > 320+H/2)
-      rect(ctx,(W-24*16)/2-4,(H-24*16)/2-4,24*16+8,24*16+8,"red");
-      rect(ctx,(W-24*16)/2,(H-24*16)/2,24*16,24*16,"grey");
-      //level 3 sequence
-      if (l3p == 1) {
-        l3t < 20 && (BoundingBox(ctx,W-80,2,80,27,"yellow",4));
-        ++l3t >= 40 && (l3t = 0);
-      } else if (l3p == 2) {
-        l3t < 20 && (BoundingBox(ctx,5,5,80,27,"yellow",4));
-        ++l3t >= 40 && (l3t = 0);
-      }
+      rect(ctx,128,48,24*16,24*16,"Gray");
+      label(ctx,10,17,"Level "+lvlNumber,"left","20px Raleway","black");
       player.draw(ctx);
       drawEntities(ctx);
-      drawUI(ctx);
       drawMessage();
       break;
     case "paused":
+      rect(ctx,128,48,24*16,24*16,"Gray")
       player.draw(ctx);
       drawEntities(ctx);
+      rect(ctx,0,0,640,480,"black",0.4);
       label(ctx,"center",200,"Paused","center","60px Raleway","red");
-      button(ctx,W/2-100,H-40,100,"Retry level",loadLevel,30);
-      button(ctx,W/2+100,H-40,120,"Back to menu",function() {phase = "Start";},30);
-      drawUI(ctx);
+      button(ctx,220,H-40,100,"Retry level",loadLevel,30);
+      button(ctx,420,H-40,120,"Back to menu",function() {phase = "Start";},30);
+      label(ctx,10,17,"Level "+lvlNumber,"left","20px Raleway","black");
       break;
-    case "lose":
+    case "die":
       drawEntities(ctx);
       rect(ctx,30,30,W-60,H-60,"rgba(255, 255, 255, 0.2)");
       label(ctx,"center",150,"You died.","center","60px Raleway","white");
-      label(ctx,"center",H*3/4,"[Space] to retry","center","20px Raleway","white");
+      button(ctx,W/2,H*(3/4),100,"Retry",loadLevel,30);
       break;
     case "beat":
       drawEntities(ctx);
@@ -119,85 +95,16 @@ function render() {
       button(ctx,W/2+100,600,120,"Back to menu",function() {phase = "Start";},30);
       label(ctx,"center",H*3/4,"[Space] for next level","center","20px Raleway","white");
       break;
-    case "gui":
-      label(ctx,30,"center","Imma label", "left","20px Raleway", "white")
-
-      label(ctx,"center",guiLH,"Imma movin'","center","20px Raleway", "white");
-      if (guiLH <= 50) {guiLD = "down";}
-      if (guiLH >= H-50) {guiLD = "up";}
-      guiLH += guiLD == "down" ? 10 : -10;
-
-      button(ctx,W - 100,H/2-50,120,"Imma Button",function() {});
-      button(ctx,W - 100,H/2,170,"Imma nother button",function() {});
-      button(ctx,W - 100,H/2+50,170,"Ooo! Another button",function() {});
-      button(ctx,W - 100,H - 40,170,"Imma back to menu",function() {phase = "Start";});
-      button(ctx,120,40,200,"Click me for a message",function() {message = msg(ctx,"GUIUGUIUG","Welcome To GUIssic park","Thank you!");});
-      message && (message.draw());
-      break;
     case "win":
-    //You just beat "The Game"! A shitty ass game that's only published because I found it in my dropbox folder out of nowhere after thinking it was lost for over a year. So, there you go! almost 2 weeks of hard work, a year long break and another week of polish, it's here. Thanks m8!
+    //You just beat "Blocki"! A shitty ass game that's only published because I found it in my dropbox folder out of nowhere after thinking it was lost for over a year. So, there you go! almost 2 weeks of hard work, a year long break and another week of polish, it's here. Thanks m8!
       label(ctx,"center",100,"Conglagurations!","center","80px Raleway", "white");
-      label(ctx,"center",240,"You just beat \"The Game\"! A shitty ass game that's only","center","25px Raleway", "white");
-      label(ctx,"center",270,"published because I found it in my dropbox folder out","center","25px Raleway", "white");
-      label(ctx,"center",300,"of nowhere after thinking it was lost for over a year. So,","center","25px Raleway", "white");
-      label(ctx,"center",330,"there you go! almost 2 months of hard work, a year long","center","25px Raleway", "white");
-      label(ctx,"center",360,"break and another week of polish, it's here. Thanks m8!","center","25px Raleway", "white");
+      label(ctx,"center",240,"You just beat Blocki! A shitty ass game that's only out","center","26px Raleway", "white");
+      label(ctx,"center",270,"because I found it in my dropbox folder out of nowhere","center","25px Raleway", "white");
+      label(ctx,"center",300,"after thinking it was lost for over a year. So there you go!","center","24px Raleway", "white");
+      label(ctx,"center",330,"almost 2 months of hard work, a year long break and a","center","25px Raleway", "white");
+      label(ctx,"center",360,"month of polish, it's here. Thank you for playing!","center","25px Raleway", "white");
       label(ctx,"center",390,"","center","25px Raleway", "white");
       button(ctx,W/2, H - 40, 120, "Back to menu",function() {restart();});
-      break;
-    case "die":
-      if (death_timer.between(0, 200)) { //phase one
-        death_text = "You died";
-        death_opacity_button = 0;
-        if (death_timer.between(0, 50)) {
-          death_opacity = death_timer / 50;
-        } else if (death_timer.between(50,150)) {
-          death_opacity = 1;
-        } else if (death_timer.between(150,200)) {
-          death_opacity = 1 - ((death_timer - 150) / 50);
-        }
-      } else if (death_timer.between(200, 250)) {
-        death_opacity = 0
-      } else if (death_timer.between(250, 450)) {
-        death_text = "You turned into a line"
-        if (death_timer.between(250, 300)) {
-          death_opacity = (death_timer - 250) / 50;
-        } else if (death_timer.between(300,400)) {
-          death_opacity = 1;
-        } else if (death_timer.between(400,450)) {
-          death_opacity = 1 - ((death_timer - 400) / 50);
-        }
-      } else if (death_timer.between(450, 500)) {
-        death_opacity = 0
-      } else if (death_timer.between(500, 700)) {
-        death_text = "And then into a point"
-        if (death_timer.between(500, 550)) {
-          death_opacity = (death_timer - 500) / 50;
-        } else if (death_timer.between(550,650)) {
-          death_opacity = 1;
-        } else if (death_timer.between(650,700)) {
-          death_opacity = 1 - ((death_timer - 650) / 50);
-        }
-      } else if (death_timer.between(700, 750)) {
-        death_opacity = 0
-      } else if (death_timer.between(750, 800)) {
-        death_text = "You lost."
-        death_opacity = (death_timer - 750) / 50;
-      } else if (death_timer.between(800, 850)) {
-        death_opacity = 1;
-        death_opacity_button = (death_timer - 800) / 50;
-      } else if (death_timer == 850) {
-        death_text = "You lost."
-        death_opacity = 1;
-        death_opacity_button = 1;
-      }
-      ctx.globalAlpha = death_opacity; //rendering start
-      label(ctx,W/2+rng(-5,5),H/2+rng(-5,5),death_text,"center","50px Raleway", "white", "middle");
-      ctx.globalAlpha = death_opacity_button;
-      button(ctx,W/2,H - 40,120,"Back to menu",function() {restart();});
-      ctx.globalAlpha = 1; //rendering end
-      //label(ctx,50,50,(death_timer + " " + death_opacity),"center","15px Raleway", "Red"); //debugging
-      death_timer = death_timer >= 850 ? 850 : death_timer + 1;
       break;
   }
 }
@@ -230,10 +137,9 @@ function keyHandler(key) {
   switch(key) {
     case "spacebar":
       if (phase == "Start"){loadLevel();}
-      if (phase == "lose") {loadLevel();}
+      if (phase == "die") {loadLevel();}
       if (phase == "beat") {lvlNumber++;loadLevel();}
       if (phase == "win")  {restart();}
-      if (phase == "die")  {if(death_timer == 850) {restart();} else {death_timer = 850}}
       if (phase == "stopped" && message) {message.end();drawMessage();}
       break;
     case "escape":
@@ -245,8 +151,8 @@ function keyHandler(key) {
 //Mouse Handling
 
 function clickHandler(evt) {
-  var clickX = evt.pageX - canvas.offsetLeft + W/2;
-  var clickY = evt.pageY - canvas.offsetTop + H/2;
+  var clickX = evt.pageX - canvas.offsetLeft;
+  var clickY = evt.pageY - canvas.offsetTop;
   if (clickX > W || clickY > H) {return;}
   for (var index in clickables) {
     var e = clickables[index];
@@ -271,6 +177,7 @@ function ParseLevel() {
         case "P": entities.push(new Entity(EntX,EntY,"tp")); break;
         case "K": entities.push(new Entity(EntX,EntY,"kill")); break;
         case "D": entities.push(new Entity(EntX,EntY,"disappear")); break;
+        case "I": entities.push(new Entity(EntX,EntY,"inviskill")); break;
         //case ".": entities.push(new Entity(EntX,EntY,"placeholder")); break; //enables red placeholder blocks, for testing
       }
     }
@@ -286,6 +193,7 @@ function getType(sType) {
     case "kill": return Entity.KILLBLOCK;
     case "disappear": return Entity.DISAPPEAR;
     case "placeholder": return Entity.PLACEHOLDER;
+    case "inviskill": return Entity.INVISKILL;
   }
 }
 
@@ -323,10 +231,8 @@ function beat() {
   }
 }
 
-function lose(e) {
-  //console.log(e);
-  player.lives--;
-  pause(player.lives === 0 ? "die" : "lose");
+function die() {
+  pause("die");
 }
 
 function pause(mode) {
@@ -338,30 +244,9 @@ function pause(mode) {
       else if (phase == "play") {phase = "paused"};
       break;
     case "beat": phase = "beat"; break;
-    case "lose": phase = "lose"; break;
+    case "die": phase = "die"; break;
     case  "win": phase =  "win"; break;
-    case  "die": phase =  "die"; break;
   }
-}
-
-//Rendering functions
-
-function drawUI(ctx) {
-  player.lives >= 3 && rect(ctx,W-75,5,20,20,"red");
-  player.lives >= 2 && rect(ctx,W-50,5,20,20,"red");
-  player.lives >= 1 && rect(ctx,W-25,5,20,20,"red");
-  label(ctx,10,17,"Level "+lvlNumber,"left","20px Raleway","black");
-}
-
-function drawFPS() {
-  time = Date.now();
-  delta = (time - ptime)/1000;
-  ptime = time;
-  timearr.push(Math.floor(1/delta));
-  timearr.shift();
-  var fpsavg = Math.floor(timearr.reduce(function(a, b) { return a + b; }, 0) / 100);  
-  //label(ctx,0,H,fpsavg,"left","35px Raleway","red","bottom");
-  console.log(fpsavg);
 }
 
 function drawEntities(ctx) {
@@ -375,14 +260,10 @@ function drawMessage() {
     message.draw();
     pause("stop");
   } else {
-    var msgs = getLevel(lvlNumber).messages;
-    if (msgIndex >= msgs.length) {pause("continue");return;}
+    var msgs = getLevel(lvlNumber).messages || [];
+    if (msgs[msgIndex] == null) {pause("continue");return;}
     message = msg(ctx,msgs[msgIndex][0],msgs[msgIndex][1],"OK");
     msgIndex++;
-    l3t = 0;
-    (msgIndex == 1 && lvlNumber == 3) && (l3p = 1);
-    (msgIndex == 2 && lvlNumber == 3) && (l3p = 2);
-    (msgIndex == 3 && lvlNumber == 3) && (l3p = 0);
   }
 }
 
@@ -397,7 +278,6 @@ function Entity(x, y, type) {
   this.entityAtLoc = null;
   this.render = getType(type);
   this.dir = "idle";
-  this.lives = 3;
   if (!this.render) {
     var _c = document.createElement('canvas'); _c.height = _c.width = 32; _ctx = _c.getContext('2d');
 
@@ -449,10 +329,19 @@ function Entity(x, y, type) {
     Entity.DISAPPEAR = new Image();
     Entity.DISAPPEAR.src = _c.toDataURL();
 
+    _ctx.fillStyle = "Orange";
+    _ctx.fillRect(2,2,28,28);
+    _ctx.fillStyle = "Gold";
+    _ctx.fillRect(9,9,14,14);
+    Entity.INVISKILL = new Image();
+    Entity.INVISKILL.src = _c.toDataURL();
+
     _ctx.fillStyle = "#E20";
     _ctx.fillRect(2,2,28,28);
     Entity.PLACEHOLDER = new Image();
     Entity.PLACEHOLDER.src = _c.toDataURL();
+
+
 
     this.render = getType(type);
   }
@@ -477,24 +366,21 @@ function Entity(x, y, type) {
         }
       }
 
-      if (this.entityAtLoc.render == Entity.KILLBLOCK) { //If in killblock
-        lose(this);
+      if (this.entityAtLoc.render == Entity.KILLBLOCK || this.entityAtLoc == Entity.INVISKILL) { //If in killblock
+        die();
       }
 
       tping = false;
       this.moveHandle(this.dir);
     }
 
-    //console.log([(W-24*16)/2,(H-24*16)/2,24*16,24*16]);
-
-    if (this === player && (player.x < 128 || player.x > 512 || player.y < 48 || player.y > 432)) {
-      lose(this);
-      //pause("pause");
+    if (this === player && (player.x < 128 || player.x > 128+24*15 || player.y < 48 || player.y > 48+24*15)) {
+      die();
     }
   }
 
   this.draw = function(ctx) {
-    if (this.render == Entity.DISAPPEAR) {
+    if (this.render == Entity.DISAPPEAR || this.render == Entity.INVISKILL) {
       var dist = Math.sqrt(Math.pow(Math.abs(this.x-player.x),2)+Math.pow(Math.abs(this.y-player.y),2));
       if (dist < 96) {
         ctx.globalAlpha = Math.min(-dist*0.015625+1.5,1);

@@ -14,9 +14,7 @@ var level1 = {level:[
 "................",
 "................",
 "................",
-"................"],
-messages:[["Welcome","Welcome to The Game."],
-					["Tutorial","You are the blue block. You need to get to the green block. Use WASD or Arrow keys to move. use Escape to pause"]]
+"................"]
 };
 
 var level2 = {level:[
@@ -35,8 +33,7 @@ var level2 = {level:[
 "................",
 "................",
 "................",
-"................"],
-messages:[["Tutorial","The gray blocks stop you. Use them to change direction."]]
+"................"]
 };
 
 var level3 = {level:[
@@ -55,10 +52,7 @@ var level3 = {level:[
 "......B...B.....",
 "........X.......",
 "................",
-"................"],
-messages:[["Tutorial","At the top right is your Life count"],
-					["Tutorial","At the top left is the level number"],
-					["Tutorial?","And Infront of you is a really bad transition"]]
+"................"]
 };
 
 var level4 = {level:[
@@ -77,8 +71,7 @@ var level4 = {level:[
 "...X.B..........",
 "................",
 "................",
-"................"],
-messages:[["Impressive","I see you have some might in ya, trying to win The Game.  TRY HARDER"]]
+"................"]
 };
 
 var level5 = {level:[
@@ -97,8 +90,7 @@ var level5 = {level:[
 "................",
 "................",
 "................",
-"................"],
-messages:[["Tutorial","The purple blocks are Teleporters. They will teleport you from one to the other!"]]
+"................"]
 };
 
 var level6 = {level:[
@@ -117,8 +109,7 @@ var level6 = {level:[
 "................",
 ".......K........",
 "................",
-"................"],
-messages:[["Tutorial","The red blocks are killers. They will kill you if you touch them."]]
+"................"]
 };
 
 var level7 = {level:[
@@ -137,8 +128,7 @@ var level7 = {level:[
 "................",
 "........X.......",
 "........K.......",
-"................"],
-messages:[["Alone","Well I think you figured it out. I'm gonna leave you alone now."]]
+"................"]
 };
 
 var level8 = {level:[
@@ -157,8 +147,7 @@ var level8 = {level:[
 "................",
 "................",
 "................",
-"................"],
-messages:[["...","I will never leave you alone... "],["!!!","Because you are Almost Done!"]]
+"................"]
 };
 
 var level9 = {level:[
@@ -197,8 +186,7 @@ var level10 = {level:[
 "..D...........D.",
 "................",
 "................",
-"................"],
-messages:[/*["LAST LEVEL","THIS ONE IS THE HARDEST! BE CAREFUL!"],["","Oh, and..."],["","Good luck"]*/]
+"................"]
 };
 
 var level11 = {level:[
@@ -216,8 +204,7 @@ var level11 = {level:[
 "......DDDDD.D...",
 "............D...",
 "....BDDDDDDDD...",
-"................"],
-messages:[["LAST LEVEL","THIS ONE IS THE HARDEST! BE CAREFUL!"],["","Oh, and..."],["","Good luck"]]
+"................"]
 };
 
 var levels = [level1,level2,level3,level4,level5,level6,level7,level8,level9,level10,level11];
