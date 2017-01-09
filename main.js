@@ -5,7 +5,7 @@
 
 var canvas,ctx,canMove,player,entities,tping,lvlNumber,phase,msgIndex; //Important variables
 var l3p,l3t; //Lvl 3 tutorial variables
-var version = "0.5";
+var version = "0.6";
 var speed = 6;
 
 /**
@@ -14,7 +14,7 @@ var speed = 6;
 
 
 window.onload = function main() {
-  phase = "Start";
+  phase = "win";
   lvlNumber = 1;
   l3p = 0;
   l3t = 0;
@@ -55,32 +55,25 @@ function restart() {
 }
 
 function render() {
-  ctx.fillStyle = "grey";
+  ctx.fillStyle = "DarkGray";
   ctx.fillRect(0,0,640,480);
   switch(phase) {
     case "Start":
-      label(ctx,"center","center","The Game","center","60px Raleway","black");
+      label(ctx,"center","center","Blocki","center","60px Raleway","black");
       label(ctx,"center",360,"[Space] to start","center","20px Raleway","black");
       label(ctx,10,25,"V"+version,"left","20px Raleway","black");
-      label(ctx,630,25,"Early Alpha","right","20px Raleway","black");
+      label(ctx,630,25,"Alpha","right","20px Raleway","black");
       break;
     case "stopped":
     case "play":
-    //(this.x < W/2-352 || this.x > 320+W/2 || this.y < H/2-352 || this.y > 320+H/2)
-      rect(ctx,128,48,384,384,"red");
-      rect(ctx,148,68,344,344,"grey");
-      rect(ctx,192,56,256,368,"grey");
-      rect(ctx,136,112,368,256,"grey");
-      for (var i = 0; i < 5; i++) {
-        rect(ctx,212+i*48,48,24,384,"grey");
-        rect(ctx,128,132+i*48,384,24,"grey");
-      }
+      rect(ctx,128,48,24*16,24*16,"Gray");
       label(ctx,10,17,"Level "+lvlNumber,"left","20px Raleway","black");
       player.draw(ctx);
       drawEntities(ctx);
       drawMessage();
       break;
     case "paused":
+      rect(ctx,128,48,24*16,24*16,"Gray")
       player.draw(ctx);
       drawEntities(ctx);
       rect(ctx,0,0,640,480,"black",0.4);
@@ -103,13 +96,13 @@ function render() {
       label(ctx,"center",H*3/4,"[Space] for next level","center","20px Raleway","white");
       break;
     case "win":
-    //You just beat "The Game"! A shitty ass game that's only published because I found it in my dropbox folder out of nowhere after thinking it was lost for over a year. So, there you go! almost 2 weeks of hard work, a year long break and another week of polish, it's here. Thanks m8!
+    //You just beat "Blocki"! A shitty ass game that's only published because I found it in my dropbox folder out of nowhere after thinking it was lost for over a year. So, there you go! almost 2 weeks of hard work, a year long break and another week of polish, it's here. Thanks m8!
       label(ctx,"center",100,"Conglagurations!","center","80px Raleway", "white");
-      label(ctx,"center",240,"You just beat \"The Game\"! A shitty ass game that's only","center","25px Raleway", "white");
-      label(ctx,"center",270,"published because I found it in my dropbox folder out","center","25px Raleway", "white");
-      label(ctx,"center",300,"of nowhere after thinking it was lost for over a year. So,","center","25px Raleway", "white");
-      label(ctx,"center",330,"there you go! almost 2 months of hard work, a year long","center","25px Raleway", "white");
-      label(ctx,"center",360,"break and another week of polish, it's here. Thanks m8!","center","25px Raleway", "white");
+      label(ctx,"center",240,"You just beat Blocki! A shitty ass game that's only out","center","26px Raleway", "white");
+      label(ctx,"center",270,"because I found it in my dropbox folder out of nowhere","center","25px Raleway", "white");
+      label(ctx,"center",300,"after thinking it was lost for over a year. So there you go!","center","24px Raleway", "white");
+      label(ctx,"center",330,"almost 2 months of hard work, a year long break and a","center","25px Raleway", "white");
+      label(ctx,"center",360,"month of polish, it's here. Thank you for playing!","center","25px Raleway", "white");
       label(ctx,"center",390,"","center","25px Raleway", "white");
       button(ctx,W/2, H - 40, 120, "Back to menu",function() {restart();});
       break;
@@ -184,6 +177,7 @@ function ParseLevel() {
         case "P": entities.push(new Entity(EntX,EntY,"tp")); break;
         case "K": entities.push(new Entity(EntX,EntY,"kill")); break;
         case "D": entities.push(new Entity(EntX,EntY,"disappear")); break;
+        case "I": entities.push(new Entity(EntX,EntY,"inviskill")); break;
         //case ".": entities.push(new Entity(EntX,EntY,"placeholder")); break; //enables red placeholder blocks, for testing
       }
     }
@@ -199,6 +193,7 @@ function getType(sType) {
     case "kill": return Entity.KILLBLOCK;
     case "disappear": return Entity.DISAPPEAR;
     case "placeholder": return Entity.PLACEHOLDER;
+    case "inviskill": return Entity.INVISKILL;
   }
 }
 
@@ -265,14 +260,10 @@ function drawMessage() {
     message.draw();
     pause("stop");
   } else {
-    var msgs = getLevel(lvlNumber).messages;
-    if (msgIndex >= msgs.length) {pause("continue");return;}
+    var msgs = getLevel(lvlNumber).messages || [];
+    if (msgs[msgIndex] == null) {pause("continue");return;}
     message = msg(ctx,msgs[msgIndex][0],msgs[msgIndex][1],"OK");
     msgIndex++;
-    l3t = 0;
-    (msgIndex == 1 && lvlNumber == 3) && (l3p = 1);
-    (msgIndex == 2 && lvlNumber == 3) && (l3p = 2);
-    (msgIndex == 3 && lvlNumber == 3) && (l3p = 0);
   }
 }
 
@@ -338,10 +329,19 @@ function Entity(x, y, type) {
     Entity.DISAPPEAR = new Image();
     Entity.DISAPPEAR.src = _c.toDataURL();
 
+    _ctx.fillStyle = "Orange";
+    _ctx.fillRect(2,2,28,28);
+    _ctx.fillStyle = "Gold";
+    _ctx.fillRect(9,9,14,14);
+    Entity.INVISKILL = new Image();
+    Entity.INVISKILL.src = _c.toDataURL();
+
     _ctx.fillStyle = "#E20";
     _ctx.fillRect(2,2,28,28);
     Entity.PLACEHOLDER = new Image();
     Entity.PLACEHOLDER.src = _c.toDataURL();
+
+
 
     this.render = getType(type);
   }
@@ -366,7 +366,7 @@ function Entity(x, y, type) {
         }
       }
 
-      if (this.entityAtLoc.render == Entity.KILLBLOCK) { //If in killblock
+      if (this.entityAtLoc.render == Entity.KILLBLOCK || this.entityAtLoc == Entity.INVISKILL) { //If in killblock
         die();
       }
 
@@ -374,16 +374,13 @@ function Entity(x, y, type) {
       this.moveHandle(this.dir);
     }
 
-    //console.log([(W-24*16)/2,(H-24*16)/2,24*16,24*16]);
-
-    if (this === player && (player.x < 128 || player.x > 512 || player.y < 48 || player.y > 432)) {
+    if (this === player && (player.x < 128 || player.x > 128+24*15 || player.y < 48 || player.y > 48+24*15)) {
       die();
-      //pause("pause");
     }
   }
 
   this.draw = function(ctx) {
-    if (this.render == Entity.DISAPPEAR) {
+    if (this.render == Entity.DISAPPEAR || this.render == Entity.INVISKILL) {
       var dist = Math.sqrt(Math.pow(Math.abs(this.x-player.x),2)+Math.pow(Math.abs(this.y-player.y),2));
       if (dist < 96) {
         ctx.globalAlpha = Math.min(-dist*0.015625+1.5,1);
